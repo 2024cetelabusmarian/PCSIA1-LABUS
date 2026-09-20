@@ -1,544 +1,83 @@
-const welcomeBox =
-    document.getElementById("welcomeBox");
+// DOM Element References
+const loginSection = document.getElementById("loginSection");
+const registerSection = document.getElementById("registerSection");
+const residentArea = document.getElementById("residentArea");
+const adminArea = document.getElementById("adminArea");
 
-const registerBtn =
-    document.getElementById("RegisterBtn");
+const showRegister = document.getElementById("showRegister");
+const showLogin = document.getElementById("showLogin");
+const logoutResident = document.getElementById("logoutResident");
+const logoutAdmin = document.getElementById("logoutAdmin");
 
-const loginBtn =
-    document.getElementById("LoginBtn");
+let statsChartInstance = null;
 
+// Toggle between Login & Register forms
+showRegister.addEventListener("click", () => {
+  loginSection.classList.remove("active");
+  registerSection.classList.add("active");
+});
 
+showLogin.addEventListener("click", () => {
+  registerSection.classList.remove("active");
+  loginSection.classList.add("active");
+});
 
+// Login Form Handling
+document.getElementById("loginForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const role = document.getElementById("loginRole").value;
+  loginSection.classList.remove("active");
 
-const registerForm =
-    document.getElementById("registerForm");
+  if (role === "resident") {
+    residentArea.classList.add("active");
+  } else {
+    adminArea.classList.add("active");
+    renderChart();
+  }
+});
 
-const backFromRegisterBtn =
-    document.getElementById(
-        "BackFromRegisterBtn"
-    );
+// Register Form Handling
+document.getElementById("registerForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  alert("Registration successful! Please login.");
+  registerSection.classList.remove("active");
+  loginSection.classList.add("active");
+});
 
+// Logout Handlers
+logoutResident.addEventListener("click", () => {
+  residentArea.classList.remove("active");
+  loginSection.classList.add("active");
+});
 
+logoutAdmin.addEventListener("click", () => {
+  adminArea.classList.remove("active");
+  loginSection.classList.add("active");
+});
 
-const loginForm =
-    document.getElementById("loginForm");
+// Render Admin Statistics Chart
+function renderChart() {
+  const ctx = document.getElementById("statsChart").getContext("2d");
 
-const backFromLoginBtn =
-    document.getElementById(
-        "BackFromLoginBtn"
-    );
+  if (statsChartInstance) {
+    statsChartInstance.destroy();
+  }
 
-const loginMessage =
-    document.getElementById(
-        "loginMessage"
-    );
-
-
-
-const userMenu =
-    document.getElementById("userMenu");
-
-const userWelcome =
-    document.getElementById(
-        "userWelcome"
-    );
-
-const logoutBtn =
-    document.getElementById("LogoutBtn");
-
-
-
-const scheduleBtn =
-    document.getElementById(
-        "ScheduleBtn"
-    );
-
-const reportsBtn =
-    document.getElementById(
-        "ReportsBtn"
-    );
-
-const crewBtn =
-    document.getElementById(
-        "CrewBtn"
-    );
-
-
-
-const scheduleSection =
-    document.getElementById(
-        "scheduleSection"
-    );
-
-const reportsSection =
-    document.getElementById(
-        "reportsSection"
-    );
-
-const crewSection =
-    document.getElementById(
-        "crewSection"
-    );
-
-
-
-
-registerBtn.addEventListener(
-    "click",
-    () => {
-
-
-        welcomeBox.classList.add(
-            "hidden"
-        );
-
-
-
-        registerForm.classList.remove(
-            "hidden"
-        );
-
+  statsChartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["Daily", "Weekly", "Monthly"],
+      datasets: [{
+        label: "Collection Volume (kg)",
+        data: [120, 850, 3400],
+        backgroundColor: ["#66bb6a", "#43a047", "#2e7d32"]
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
-);
-
-
-
-
-backFromRegisterBtn.addEventListener(
-    "click",
-    () => {
-
-
-        registerForm.classList.add(
-            "hidden"
-        );
-
-
-
-        welcomeBox.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-
-registerForm.addEventListener(
-    "submit",
-    (event) => {
-
-        event.preventDefault();
-
-        const firstName =
-            document.getElementById(
-                "firstName"
-            ).value.trim();
-
-        const email =
-            document.getElementById(
-                "registerEmail"
-            ).value.trim();
-
-        const password =
-            document.getElementById(
-                "registerPassword"
-            ).value;
-
-
-
-        if (
-            firstName === "" ||
-            email === "" ||
-            password === ""
-        ) {
-
-            alert(
-                "Please complete all required fields."
-            );
-
-            return;
-
-        }
-
-
-
-        localStorage.setItem(
-            "swcrsEmail",
-            email
-        );
-
-        localStorage.setItem(
-            "swcrsPassword",
-            password
-        );
-
-        localStorage.setItem(
-            "swcrsFirstName",
-            firstName
-        );
-
-
-
-        alert(
-            "Registration successful! You can now login."
-        );
-
-
-
-        registerForm.classList.add(
-            "hidden"
-        );
-
-
-
-        loginForm.classList.remove(
-            "hidden"
-        );
-
-
-
-        document.getElementById(
-            "loginEmail"
-        ).value = email;
-
-    }
-);
-
-
-
-loginBtn.addEventListener(
-    "click",
-    () => {
-
-        welcomeBox.classList.add(
-            "hidden"
-        );
-
-
-
-        loginForm.classList.remove(
-            "hidden"
-        );
-
-
-
-        loginMessage.textContent = "";
-
-    }
-);
-
-
-
-backFromLoginBtn.addEventListener(
-    "click",
-    () => {
-
-
-        loginForm.classList.add(
-            "hidden"
-        );
-
-
-        welcomeBox.classList.remove(
-            "hidden"
-        );
-
-
-
-        loginMessage.textContent = "";
-
-    }
-);
-
-
-
-
-loginForm.addEventListener(
-    "submit",
-    (event) => {
-
-
-        event.preventDefault();
-
-
-
-        const email =
-            document.getElementById(
-                "loginEmail"
-            ).value.trim();
-
-        const password =
-            document.getElementById(
-                "loginPassword"
-            ).value;
-
-
-        const savedEmail =
-            localStorage.getItem(
-                "swcrsEmail"
-            );
-
-        const savedPassword =
-            localStorage.getItem(
-                "swcrsPassword"
-            );
-
-        const savedFirstName =
-            localStorage.getItem(
-                "swcrsFirstName"
-            );
-
-
-
-        if (
-            savedEmail === null ||
-            savedPassword === null
-        ) {
-
-            loginMessage.textContent =
-                "No account found. Please register first.";
-
-            loginMessage.style.color =
-                "#ffb3b3";
-
-            return;
-
-        }
-
-
-        if (
-            email === savedEmail &&
-            password === savedPassword
-        ) {
-
-
-            loginMessage.textContent =
-                "Login successful!";
-
-            loginMessage.style.color =
-                "#6ff0a7";
-
-
-
-            setTimeout(
-                () => {
-
-                    showUserMenu(
-                        savedFirstName
-                    );
-
-                },
-                500
-            );
-
-        }
-
-        else {
-
-
-            loginMessage.textContent =
-                "Incorrect email or password.";
-
-            loginMessage.style.color =
-                "#ffb3b3";
-
-        }
-
-    }
-);
-
-
-
-function showUserMenu(firstName) {
-
-
-    loginForm.classList.add(
-        "hidden"
-    );
-
-
-
-    userMenu.classList.remove(
-        "hidden"
-    );
-
-
-
-    userWelcome.textContent =
-        "Welcome, " +
-        firstName +
-        "! You are now logged in.";
-
+  });
 }
-
-
-
-scheduleBtn.addEventListener(
-    "click",
-    () => {
-
-
-        userMenu.classList.add(
-            "hidden"
-        );
-
-
-
-        scheduleSection.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-
-
-reportsBtn.addEventListener(
-    "click",
-    () => {
-
-
-        userMenu.classList.add(
-            "hidden"
-        );
-
-
-
-        reportsSection.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-
-
-crewBtn.addEventListener(
-    "click",
-    () => {
-
-
-        userMenu.classList.add(
-            "hidden"
-        );
-
-
-
-        crewSection.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-const backMenuButtons =
-    document.querySelectorAll(
-        "[data-back-menu]"
-    );
-
-
-backMenuButtons.forEach(
-    (button) => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-
-                scheduleSection.classList.add(
-                    "hidden"
-                );
-
-                reportsSection.classList.add(
-                    "hidden"
-                );
-
-                crewSection.classList.add(
-                    "hidden"
-                );
-
-
-
-                userMenu.classList.remove(
-                    "hidden"
-                );
-
-            }
-        );
-
-    }
-);
-
-
-
-logoutBtn.addEventListener(
-    "click",
-    () => {
-
-
-        userMenu.classList.add(
-            "hidden"
-        );
-
-
-
-        scheduleSection.classList.add(
-            "hidden"
-        );
-
-        reportsSection.classList.add(
-            "hidden"
-        );
-
-        crewSection.classList.add(
-            "hidden"
-        );
-
-
-
-        document.getElementById(
-            "loginPassword"
-        ).value = "";
-
-
-
-        welcomeBox.classList.remove(
-            "hidden"
-        );
-
-
-        alert(
-            "You have been logged out."
-        );
-
-    }
-);
-
-
-
-const tableRows =
-    document.querySelectorAll(
-        ".styled-table tbody tr"
-    );
-
-
-tableRows.forEach(
-    (row) => {
-
-        row.addEventListener(
-            "click",
-            () => {
-
-                row.classList.toggle(
-                    "highlight"
-                );
-
-            }
-        );
-
-    }
-);
